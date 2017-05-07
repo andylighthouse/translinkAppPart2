@@ -3,7 +3,7 @@
 I wrote the following functionalities:
 
 showing all the stops on the map and in clusters if stops are too close together
-  - markStops method in the MapDisplayFragment.java file in the UI folder
+  - markStops method in the MapDisplayFragment.java file in the ui folder
  
 tracking nearest stop and out of range
   - handleLocationChange method in the MapDisplayFragment.java file in the ui folder
