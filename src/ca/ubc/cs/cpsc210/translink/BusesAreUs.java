@@ -146,8 +146,7 @@ public class BusesAreUs extends Activity implements LocationListener, StopSelect
      * Set selected stop in StopManager.
      *
      * @param stop stop selected by user
-     *             <p>
-
+     *
      */
     @Override
     public void onStopSelected(Stop stop) {

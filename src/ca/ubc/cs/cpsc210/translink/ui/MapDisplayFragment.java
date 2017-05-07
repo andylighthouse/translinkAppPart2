@@ -296,13 +296,11 @@ public class MapDisplayFragment extends Fragment implements MapEventsReceiver, I
 
     /**
      * Plot each visible segment of each route pattern of each route going through the selected stop.
-     * <p>
-
      */
     private void plotRoutes() {
         updateVisibleArea();
         busRouteOverlays.clear();
-
+        //use the stop manager to get the selected stop
         Stop s = StopManager.getInstance().getSelected();
         List<GeoPoint> points;
         List<LatLon> coordinates;
@@ -311,25 +309,27 @@ public class MapDisplayFragment extends Fragment implements MapEventsReceiver, I
 
         busRouteLegendOverlay.clear();
 
-
         if (s != null) {
+            //get the routes for this stop
             Set<Route> routes = s.getRoutes();
 
+            //for all the routes go through each route
             for (Route r : routes) {
                 number = busRouteLegendOverlay.add(r.getNumber());
                 List<RoutePattern> routePattern = r.getPatterns();
 
+                //for every pattern in ever route
                 for (RoutePattern p : routePattern) {
                     coordinates = p.getPath();
 
-                    for (int i = 0; i < coordinates.size()-1; i++) {
+                    // create polyline with all the coordinates
+                    for (int i = 0; i < coordinates.size() - 1; i++) {
                         line = new Polyline(mapView.getContext());
                         line.setColor(number);
                         line.setWidth(getLineWidth(zoomLevel));
                         points = new ArrayList<>();
 
-//                        System.out.println("i "+coordinates.get(i));
-//                        System.out.println("i+1 "+coordinates.get(i + 1));
+                        //make sure it is within the display
                         if (Geometry.rectangleIntersectsLine(northWest, southEast, coordinates.get(i), coordinates.get(i + 1))) {
                             points.add(new GeoPoint(coordinates.get(i).getLatitude(), coordinates.get(i).getLongitude()));
                             points.add(new GeoPoint(coordinates.get(i + 1).getLatitude(), coordinates.get(i + 1).getLongitude()));
@@ -364,15 +364,12 @@ public class MapDisplayFragment extends Fragment implements MapEventsReceiver, I
         //making the stop cluster
         newStopClusterer();
 
-
         StopManager sm = StopManager.getInstance();
         for (Stop currentStop : sm) {
 
-            //currentStop.getLocn();
-            //System.out.println(currentStop.getLocn());
-            //find out if the stop is in the box
+            //find out if the stop is in the current view
             if (Geometry.rectangleContainsPoint(northWest, southEast, currentStop.getLocn())) {
-                //Marker currentMarker = getMarker(currentStop);
+                //create the stop maker
                 Marker currentMaker = getMarker(currentStop);
                 if (currentMaker == null) {
                     currentMaker = new Marker(mapView);
@@ -382,6 +379,7 @@ public class MapDisplayFragment extends Fragment implements MapEventsReceiver, I
                     currentMaker.setTitle(currentStop.getNumber() + " " + currentStop.getName());
                     currentMaker.setPosition(new GeoPoint(currentStop.getLocn().getLatitude(), currentStop.getLocn().getLongitude()));
                 }
+                // add the stop marker to set map and the cluster
                 setMarker(currentStop, currentMaker);
                 stopClusterer.add(currentMaker);
             }
@@ -394,24 +392,21 @@ public class MapDisplayFragment extends Fragment implements MapEventsReceiver, I
      * no stop is marked as the nearest stop.
      *
      * @param nearest stop nearest to user's location (null if no stop within StopManager.RADIUS metres)
-     *                <p>
      */
     private void updateMarkerOfNearest(Stop nearest) {
         Drawable stopIconDrawable = getResources().getDrawable(R.drawable.stop_icon);
         Drawable closestStopIconDrawable = getResources().getDrawable(R.drawable.closest_stop_icon);
 
-//        nearestStopMarker = getMarker(nearest);
-//        nearestStopMarker.setIcon(closestStopIconDrawable);
-        //nearest might be null!!!!!!
-
-        // if there is a stop nearby
+        // check if there is a stop nearby
         if (nearest != null) {
             if (nearestStopMarker != null)
-
             {
+                //to change the stop color from green to red, when the location is moved far away from any translink stop
                 nearestStopMarker.setIcon(stopIconDrawable);
             }
+            //check if the nearest stop is set
             nearestStopMarker = getMarker(nearest);
+            //if there isn't a nearest stop, create it
             if (nearestStopMarker == null) {
                 nearestStopMarker = new Marker(mapView);
                 nearestStopMarker.setRelatedObject(nearest);
@@ -422,11 +417,12 @@ public class MapDisplayFragment extends Fragment implements MapEventsReceiver, I
                 setMarker(nearest, nearestStopMarker);
                 stopClusterer.add(nearestStopMarker);
             } else {
+                //make the color of the stop to green, since its the closest
                 nearestStopMarker.setIcon(closestStopIconDrawable);
-                //System.out.println("HEREEEEEEE2: "+nearestStopMarker.getTitle());
             }
         } else {
             if (nearestStopMarker != null) {
+                //change the stop color back to red
                 nearestStopMarker.setIcon(stopIconDrawable);
             }
         }
@@ -463,14 +459,12 @@ public class MapDisplayFragment extends Fragment implements MapEventsReceiver, I
      * Also, calls locationListener.onLocationChanged with the closest stop and the current location as a LatLon.
      *
      * @param location the location of the user
-     *                 <p>
      */
     private void handleLocationChange(Location location) {
         LatLon currentPoint = new LatLon(location.getLatitude(), location.getLongitude());
 
         Stop nearestStop = StopManager.getInstance().findNearestTo(currentPoint);
         if (nearestStop != null) {
-            System.out.println("HEREEEEEEE1: " + nearestStop.getNumber());
         }
         updateMarkerOfNearest(nearestStop);
         //make change to front-end needed, don't forget to implement

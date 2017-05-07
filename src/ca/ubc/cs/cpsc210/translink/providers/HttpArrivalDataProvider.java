@@ -13,6 +13,7 @@ import static ca.ubc.cs.cpsc210.translink.BusesAreUs.TRANSLINK_API_KEY;
  */
 public class HttpArrivalDataProvider extends AbstractHttpDataProvider {
     private Stop stop;
+    private String url;
 
     public HttpArrivalDataProvider(Stop stop) {
         super();
@@ -23,15 +24,12 @@ public class HttpArrivalDataProvider extends AbstractHttpDataProvider {
     /**
      * Produces URL used to query Translink web service for expected arrivals at
      * the stop specified in call to constructor.
-     *
      * @returns URL to query Translink web service for arrival data
      *
-
      */
     protected URL getURL() throws MalformedURLException {
 
-        String url = "http://api.translink.ca/rttiapi/v1/stops/" + stop.getNumber() + "/estimates?apikey=" + TRANSLINK_API_KEY;
-
+        url = "http://api.translink.ca/rttiapi/v1/stops/" + stop.getNumber() + "/estimates?apikey=" + TRANSLINK_API_KEY;
         return new URL(url);
     }
 
