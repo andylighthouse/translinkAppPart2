@@ -1,6 +1,6 @@
 # translinkAppPart2
 
-I wrote the dollowing functionalites:
+I wrote the following functionalities:
 
 showing all the stops on the map and in clusters if stops are too close together
   - markStops method in the MapDisplayFragment.java file in the UI folder
